@@ -60,12 +60,10 @@ def add_tasks(status_list, count_users, count_tasks):
             )
 
 
-add_users(count_users)
-add_status(status_list)
-add_tasks(status_list, count_users, count_tasks)
-
-
 try:
+    add_users(count_users)
+    add_status(status_list)
+    add_tasks(status_list, count_users, count_tasks)
     conn.commit()
 except DatabaseError as e:
     logging.error(e)
