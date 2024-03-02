@@ -16,8 +16,8 @@ db_config = {
 
 # Кількість користуваічів
 count_users = 10
-# Кількість задач одного статусу
-count_tasks = 10
+# Кількість задач
+count_tasks = 30
 # Перелік статусів
 status_list = ["New", "In progress", "Done"]
 
@@ -47,17 +47,16 @@ def add_status(status_list):
 
 # Додавання задач
 def add_tasks(status_list, count_users, count_tasks):
-    for status_id in range(1, len(status_list) + 1):
-        for _ in range(count_tasks):
-            cur.execute(
-                "INSERT INTO tasks (title, description, status_id, user_id) VALUES (%s, %s, %s, %s)",
-                (
-                    fake.sentence(),
-                    fake.text(),
-                    status_id,
-                    random.randint(1, count_users),
-                ),
-            )
+    for _ in range(count_tasks):
+        cur.execute(
+            "INSERT INTO tasks (title, description, status_id, user_id) VALUES (%s, %s, %s, %s)",
+            (
+                fake.sentence(),
+                fake.text(),
+                random.randint(1, len(status_list)),
+                random.randint(1, count_users),
+            ),
+        )
 
 
 try:
