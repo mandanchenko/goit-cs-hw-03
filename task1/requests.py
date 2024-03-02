@@ -131,11 +131,11 @@ try:
     select_tasks_in_progress_query = (
         "SELECT users.fullname, tasks.title FROM users "
         "INNER JOIN tasks ON users.id = tasks.user_id "
-        "WHERE tasks.status_id = (SELECT id FROM status WHERE name = 'in progress');"
+        "WHERE tasks.status_id = 2;"
     )
     cursor.execute(select_tasks_in_progress_query)
     tasks_in_progress_query = cursor.fetchall()
-    print("Користувачі та щой завдання, які є у статусі 'in progress':")
+    print("Користувачі та їх завдання, які є у статусі 'in progress':")
     for task in tasks_in_progress_query:
         print(task)
 
@@ -146,7 +146,7 @@ try:
     )
     cursor.execute(select_users_and_tasks_query)
     users_and_tasks_query = cursor.fetchall()
-    print("Користувачі та кількість щой завдань:")
+    print("Користувачі та кількість їх завдань:")
     for user in users_and_tasks_query:
         print(user)
 
