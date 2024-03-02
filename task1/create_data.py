@@ -16,8 +16,8 @@ db_config = {
 
 # Кількість користуваічів
 count_users = 10
-# Кількість задач
-count_tasks = 30
+# Кількість задач одного статусу
+count_tasks = 10
 # Перелік статусів
 status_list = ["New", "In progress", "Done"]
 
