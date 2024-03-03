@@ -1,5 +1,3 @@
-from bson.objectid import ObjectId
-
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pymongo.errors import PyMongoError, ConnectionFailure
@@ -117,4 +115,3 @@ if __name__ == "__main__":
     read_all()
     delete_all()
     read_all()
-
