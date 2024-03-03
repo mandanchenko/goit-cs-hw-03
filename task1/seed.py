@@ -1,9 +1,6 @@
-import logging
-
 from faker import Faker
 import random
 import psycopg2
-from psycopg2 import DatabaseError
 
 fake = Faker()
 
@@ -22,51 +19,63 @@ count_tasks = 30
 status_list = ["New", "In progress", "Done"]
 
 
-# Підключення до бази даних
-conn = psycopg2.connect(**db_config)
-cur = conn.cursor()
-
-
 # Додавання користувачів
 def add_users(count_users):
-    for _ in range(count_users):
-        cur.execute(
-            "INSERT INTO users (fullname, email) VALUES (%s, %s)",
-            (
-                fake.name(),
-                fake.unique.email(),
-            ),
-        )
+    users_data = [(fake.name(), fake.unique.email()) for _ in range(count_users)]
+    return users_data
 
 
 # Додавання статусів
 def add_status(status_list):
-    for status in status_list:
-        cur.execute("INSERT INTO status (name) VALUES (%s)", (status,))
+    status_data = [(status,) for status in status_list]
+    return status_data
 
 
 # Додавання задач
 def add_tasks(status_list, count_users, count_tasks):
-    for _ in range(count_tasks):
-        cur.execute(
-            "INSERT INTO tasks (title, description, status_id, user_id) VALUES (%s, %s, %s, %s)",
-            (
-                fake.sentence(),
-                fake.text(),
-                random.randint(1, len(status_list)),
-                random.randint(1, count_users),
-            ),
+    tasks_data = [
+        (
+            fake.sentence(),
+            fake.text(),
+            random.randint(1, len(status_list)),
+            random.randint(1, count_users),
+        )
+        for _ in range(count_tasks)
+    ]
+    return tasks_data
+
+
+def main():
+    # Підключення до бази даних
+    conn = None
+    try:
+        conn = psycopg2.connect(**db_config)
+        cur = conn.cursor()
+        # Додавання користувачів
+        cur.executemany(
+            "INSERT INTO users (fullname, email) VALUES (%s, %s)",
+            add_users(count_users),
         )
 
+        # Додавання статусів
+        cur.executemany(
+            "INSERT INTO status (name) VALUES (%s)", add_status(status_list)
+        )
 
-try:
-    add_users(count_users)
-    add_status(status_list)
-    add_tasks(status_list, count_users, count_tasks)
-    conn.commit()
-except DatabaseError as e:
-    logging.error(e)
-    conn.rollback()
-finally:
-    cur.close()
-    conn.close()
+        # Додавання задач
+        cur.executemany(
+            "INSERT INTO tasks (title, description, status_id, user_id) VALUES (%s, %s, %s, %s)",
+            add_tasks(status_list, count_users, count_tasks),
+        )
+
+        conn.commit()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+
+
+if __name__ == "__main__":
+    main()
